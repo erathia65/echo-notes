@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A long aisle of library shelves, vanishing to a single lit lamp in the distance.">
+  <title>The empty aisle</title>
+
+  <!-- Background: matches the page -->
+  <rect width="1200" height="600" fill="#fafaf7"/>
+
+  <!-- Floor: a slight perspective, the front edge of the floor closer to the viewer -->
+  <path d="M 0,560 C 200,558 410,562 620,560 C 830,558 1010,562 1200,560"
+        fill="none" stroke="#3a2f24" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- The two long shelves, left and right of the aisle, perspective converging toward (600, 270) -->
+  <!-- LEFT SHELF (x decreases as y decreases) -->
+  <!-- Top edge of the left shelf, going from bottom-left up to vanishing point -->
+  <path d="M 0,200 L 0,560" fill="none" stroke="#3a2f24" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 0,200 L 580,272 L 580,560 L 0,560" fill="none" stroke="#3a2f24" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Front face of left shelf (the spine wall) -->
+  <path d="M 0,200 L 580,272" fill="none" stroke="#3a2f24" stroke-width="2"/>
+  <path d="M 0,560 L 580,560 L 580,272" fill="none" stroke="#3a2f24" stroke-width="2"/>
+  <!-- Internal shelf dividers on the left, three of them receding -->
+  <path d="M 0,290 L 200,310" fill="none" stroke="#3a2f24" stroke-width="1.2" opacity="0.7"/>
+  <path d="M 0,380 L 200,396" fill="none" stroke="#3a2f24" stroke-width="1.2" opacity="0.7"/>
+  <path d="M 0,470 L 200,478" fill="none" stroke="#3a2f24" stroke-width="1.2" opacity="0.7"/>
+
+  <!-- RIGHT SHELF -->
+  <path d="M 1200,200 L 1200,560" fill="none" stroke="#3a2f24" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 1200,200 L 620,272 L 620,560 L 1200,560" fill="none" stroke="#3a2f24" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M 1200,200 L 620,272" fill="none" stroke="#3a2f24" stroke-width="2"/>
+  <path d="M 1200,560 L 620,560 L 620,272" fill="none" stroke="#3a2f24" stroke-width="2"/>
+  <path d="M 1200,290 L 1000,310" fill="none" stroke="#3a2f24" stroke-width="1.2" opacity="0.7"/>
+  <path d="M 1200,380 L 1000,396" fill="none" stroke="#3a2f24" stroke-width="1.2" opacity="0.7"/>
+  <path d="M 1200,470 L 1000,478" fill="none" stroke="#3a2f24" stroke-width="1.2" opacity="0.7"/>
+
+  <!-- Books on the left shelf, in three bands (top / middle / bottom of left shelf face) -->
+  <!-- Each book is a small quad in perspective, x-scaled by where it sits on the aisle -->
+  <g stroke="#2a2520" stroke-width="0.8" stroke-linejoin="round">
+    <!-- Top band (y ≈ 220..280) -->
+    <polygon points="0,228 60,232 60,272 0,268" fill="#2c3e50"/>
+    <polygon points="62,232 110,235 110,275 62,272" fill="#3d3a4a"/>
+    <polygon points="112,235 150,237 150,277 112,275" fill="#4a3c2a"/>
+    <polygon points="152,237 195,239 195,279 152,277" fill="#5d4a3a"/>
+    <polygon points="197,239 240,240 240,280 197,279" fill="#2c3e50"/>
+    <polygon points="242,240 285,241 285,281 242,280" fill="#3d3a4a"/>
+    <polygon points="287,241 320,242 320,282 287,281" fill="#4a3c2a"/>
+    <polygon points="322,242 355,243 355,283 322,282" fill="#2c3e50"/>
+    <polygon points="357,243 385,243 385,283 357,283" fill="#3d3a4a"/>
+    <polygon points="387,243 415,244 415,284 387,283" fill="#4a3c2a"/>
+    <polygon points="417,244 440,244 440,284 417,284" fill="#2c3e50"/>
+    <polygon points="442,244 462,245 462,285 442,284" fill="#5d4a3a"/>
+    <polygon points="464,245 480,245 480,285 464,285" fill="#3d3a4a"/>
+    <polygon points="482,245 495,245 495,285 482,285" fill="#4a3c2a"/>
+    <polygon points="497,245 510,245 510,285 497,285" fill="#2c3e50"/>
+    <polygon points="512,245 525,246 525,286 512,285" fill="#3d3a4a"/>
+    <polygon points="527,246 538,246 538,286 527,286" fill="#4a3c2a"/>
+    <polygon points="540,246 550,246 550,286 540,286" fill="#2c3e50"/>
+    <polygon points="552,246 560,246 560,286 552,286" fill="#3d3a4a"/>
+    <!-- One accent red book, far periphery -->
+    <polygon points="22,229 50,231 50,271 22,269" fill="#8b3a3a"/>
+
+    <!-- Middle band (y ≈ 318..378) -->
+    <polygon points="0,328 70,333 70,373 0,368" fill="#3d3a4a"/>
+    <polygon points="72,333 130,337 130,377 72,373" fill="#4a3c2a"/>
+    <polygon points="132,337 180,340 180,380 132,377" fill="#2c3e50"/>
+    <polygon points="182,340 225,343 225,383 180,380" fill="#5d4a3a"/>
+    <polygon points="227,343 270,345 270,385 225,383" fill="#3d3a4a"/>
+    <polygon points="272,345 310,347 310,387 270,385" fill="#4a3c2a"/>
+    <polygon points="312,347 345,348 345,388 310,387" fill="#2c3e50"/>
+    <polygon points="347,348 375,349 375,389 345,388" fill="#3d3a4a"/>
+    <polygon points="377,349 405,350 405,390 375,389" fill="#4a3c2a"/>
+    <polygon points="407,350 430,351 430,391 405,390" fill="#2c3e50"/>
+    <polygon points="432,351 452,351 452,391 430,391" fill="#5d4a3a"/>
+    <polygon points="454,351 472,352 472,392 452,391" fill="#3d3a4a"/>
+    <polygon points="474,352 490,352 490,392 472,392" fill="#4a3c2a"/>
+    <polygon points="492,352 504,352 504,392 490,392" fill="#2c3e50"/>
+    <polygon points="506,352 516,352 516,392 504,392" fill="#3d3a4a"/>
+    <polygon points="518,352 528,353 528,393 516,392" fill="#4a3c2a"/>
+    <polygon points="530,353 540,353 540,393 528,393" fill="#2c3e50"/>
+    <polygon points="542,353 552,353 552,393 540,393" fill="#3d3a4a"/>
+    <polygon points="554,353 562,353 562,393 552,393" fill="#4a3c2a"/>
+
+    <!-- Bottom band (y ≈ 408..488) -->
+    <polygon points="0,418 80,425 80,478 0,470" fill="#2c3e50"/>
+    <polygon points="82,425 145,430 145,481 82,478" fill="#4a3c2a"/>
+    <polygon points="147,430 200,434 200,483 145,481" fill="#3d3a4a"/>
+    <polygon points="202,434 250,437 250,485 200,483" fill="#5d4a3a"/>
+    <polygon points="252,437 295,440 295,486 250,485" fill="#2c3e50"/>
+    <polygon points="297,440 335,442 335,487 295,486" fill="#3d3a4a"/>
+    <polygon points="337,442 370,443 370,488 335,487" fill="#4a3c2a"/>
+    <polygon points="372,443 400,444 400,488 370,488" fill="#2c3e50"/>
+    <polygon points="402,444 428,445 428,489 400,488" fill="#3d3a4a"/>
+    <polygon points="430,445 452,446 452,489 428,489" fill="#4a3c2a"/>
+    <polygon points="454,446 472,446 472,489 452,489" fill="#2c3e50"/>
+    <polygon points="474,446 490,447 490,490 472,489" fill="#5d4a3a"/>
+    <polygon points="492,447 506,447 506,490 490,490" fill="#3d3a4a"/>
+    <polygon points="508,447 522,447 522,490 506,490" fill="#4a3c2a"/>
+    <polygon points="524,447 536,448 536,490 522,490" fill="#2c3e50"/>
+    <polygon points="538,448 548,448 548,490 536,490" fill="#3d3a4a"/>
+    <polygon points="550,448 558,448 558,490 548,490" fill="#4a3c2a"/>
+  </g>
+
+  <!-- Books on the right shelf, mirrored perspective -->
+  <g stroke="#2a2520" stroke-width="0.8" stroke-linejoin="round">
+    <!-- Top band -->
+    <polygon points="1200,228 1140,232 1140,272 1200,268" fill="#3d3a4a"/>
+    <polygon points="1138,232 1090,235 1090,275 1138,272" fill="#2c3e50"/>
+    <polygon points="1088,235 1050,237 1050,277 1088,275" fill="#5d4a3a"/>
+    <polygon points="1048,237 1005,239 1005,279 1048,277" fill="#3d3a4a"/>
+    <polygon points="1003,239 960,240 960,280 1003,279" fill="#4a3c2a"/>
+    <polygon points="958,240 915,241 915,281 958,280" fill="#2c3e50"/>
+    <polygon points="913,241 880,242 880,282 913,281" fill="#3d3a4a"/>
+    <polygon points="878,242 845,243 845,283 878,282" fill="#4a3c2a"/>
+    <polygon points="843,243 815,243 815,283 843,283" fill="#2c3e50"/>
+    <polygon points="813,243 785,244 785,284 813,283" fill="#3d3a4a"/>
+    <polygon points="783,244 760,244 760,284 785,284" fill="#4a3c2a"/>
+    <polygon points="758,244 738,245 738,285 760,284" fill="#2c3e50"/>
+    <polygon points="736,245 718,245 718,285 738,285" fill="#3d3a4a"/>
+    <polygon points="716,245 700,245 700,285 718,285" fill="#4a3c2a"/>
+    <polygon points="698,245 685,245 685,285 700,285" fill="#2c3e50"/>
+    <polygon points="683,245 670,246 670,286 685,285" fill="#3d3a4a"/>
+    <polygon points="668,246 657,246 657,286 670,286" fill="#4a3c2a"/>
+    <polygon points="655,246 645,246 645,286 657,286" fill="#2c3e50"/>
+    <polygon points="643,246 635,246 635,286 645,286" fill="#3d3a4a"/>
+    <!-- One accent red book, far periphery on the right -->
+    <polygon points="1148,231 1175,229 1175,269 1148,271" fill="#8b3a3a"/>
+
+    <!-- Middle band -->
+    <polygon points="1200,328 1130,333 1130,373 1200,368" fill="#4a3c2a"/>
+    <polygon points="1128,333 1070,337 1070,377 1128,373" fill="#2c3e50"/>
+    <polygon points="1068,337 1020,340 1020,380 1068,377" fill="#3d3a4a"/>
+    <polygon points="1018,340 975,343 975,383 1020,380" fill="#5d4a3a"/>
+    <polygon points="973,343 930,345 930,385 975,383" fill="#2c3e50"/>
+    <polygon points="928,345 890,347 890,387 930,385" fill="#3d3a4a"/>
+    <polygon points="888,347 855,348 855,388 890,387" fill="#4a3c2a"/>
+    <polygon points="853,348 825,349 825,389 855,388" fill="#2c3e50"/>
+    <polygon points="823,349 795,350 795,390 825,389" fill="#3d3a4a"/>
+    <polygon points="793,350 770,351 770,391 795,390" fill="#4a3c2a"/>
+    <polygon points="768,351 748,351 748,391 770,391" fill="#2c3e50"/>
+    <polygon points="746,351 728,352 728,392 748,391" fill="#3d3a4a"/>
+    <polygon points="726,352 710,352 710,392 728,392" fill="#4a3c2a"/>
+    <polygon points="708,352 696,352 696,392 710,392" fill="#2c3e50"/>
+    <polygon points="694,352 684,352 684,392 696,392" fill="#3d3a4a"/>
+    <polygon points="682,352 672,353 672,393 684,392" fill="#4a3c2a"/>
+    <polygon points="670,353 660,353 660,393 672,393" fill="#2c3e50"/>
+    <polygon points="658,353 648,353 648,393 660,393" fill="#3d3a4a"/>
+    <polygon points="646,353 638,353 638,393 648,393" fill="#4a3c2a"/>
+
+    <!-- Bottom band -->
+    <polygon points="1200,418 1120,425 1120,478 1200,470" fill="#3d3a4a"/>
+    <polygon points="1118,425 1055,430 1055,481 1118,478" fill="#2c3e50"/>
+    <polygon points="1053,430 1000,434 1000,483 1053,481" fill="#4a3c2a"/>
+    <polygon points="998,434 950,437 950,485 1000,483" fill="#5d4a3a"/>
+    <polygon points="948,437 905,440 905,486 950,485" fill="#3d3a4a"/>
+    <polygon points="903,440 865,442 865,487 905,486" fill="#2c3e50"/>
+    <polygon points="863,442 830,443 830,488 865,487" fill="#3d3a4a"/>
+    <polygon points="828,443 800,444 800,488 830,488" fill="#4a3c2a"/>
+    <polygon points="798,444 772,445 772,489 800,488" fill="#2c3e50"/>
+    <polygon points="770,445 748,446 748,489 772,489" fill="#3d3a4a"/>
+    <polygon points="746,446 728,446 728,489 748,489" fill="#4a3c2a"/>
+    <polygon points="726,446 710,447 710,490 728,489" fill="#5d4a3a"/>
+    <polygon points="708,447 694,447 694,490 710,490" fill="#2c3e50"/>
+    <polygon points="692,447 678,447 678,490 694,490" fill="#3d3a4a"/>
+    <polygon points="676,447 664,448 664,490 678,490" fill="#4a3c2a"/>
+    <polygon points="662,448 652,448 652,490 664,490" fill="#2c3e50"/>
+    <polygon points="650,448 642,448 642,490 652,490" fill="#3d3a4a"/>
+  </g>
+
+  <!-- A few unlit lamps on the shelves, hanging down from the top of the aisle -->
+  <!-- Two off, on the left and right at the front of the aisle -->
+  <line x1="220" y1="200" x2="220" y2="245" stroke="#2a2520" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M 207,245 L 233,245 L 230,255 L 210,255 Z" fill="none" stroke="#2a2520" stroke-width="1.2" stroke-linejoin="round"/>
+  <line x1="210" y1="255" x2="230" y2="255" stroke="#2a2520" stroke-width="1.2" stroke-linecap="round"/>
+
+  <line x1="980" y1="200" x2="980" y2="245" stroke="#2a2520" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M 967,245 L 993,245 L 990,255 L 970,255 Z" fill="none" stroke="#2a2520" stroke-width="1.2" stroke-linejoin="round"/>
+  <line x1="970" y1="255" x2="990" y2="255" stroke="#2a2520" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- The single LIT lamp, far down the aisle at the vanishing point, x≈600, y≈270 -->
+  <line x1="600" y1="200" x2="600" y2="262" stroke="#2a2520" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M 590,262 L 610,262 L 608,272 L 592,272 Z" fill="none" stroke="#2a2520" stroke-width="1.2" stroke-linejoin="round"/>
+  <line x1="592" y1="272" x2="608" y2="272" stroke="#2a2520" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- LAMP GLOW at the vanishing point, animated -->
+  <g class="lamp-glow">
+    <ellipse cx="600" cy="278" rx="34" ry="12" fill="#f4d889" opacity="0.45"/>
+    <ellipse cx="600" cy="280" rx="80" ry="32" fill="#f4d889" opacity="0.22"/>
+    <ellipse cx="600" cy="285" rx="160" ry="60" fill="#f4d889" opacity="0.10"/>
+  </g>
+
+  <!-- A small empty wooden table in the foreground, very bottom, no books, no lamp -->
+  <!-- A low table at center-bottom, x=540..660, y=540..580 -->
+  <path d="M 540,560 C 580,558 620,562 660,560" fill="none" stroke="#3a2f24" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 555,560 L 552,595" fill="none" stroke="#3a2f24" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M 645,560 L 648,595" fill="none" stroke="#3a2f24" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- A faint horizontal stretcher between the legs -->
+  <path d="M 560,580 L 640,580" fill="none" stroke="#3a2f24" stroke-width="1" opacity="0.6"/>
+
+  <!-- Floor: a few subtle horizontal lines suggesting wooden planks, fading into the perspective -->
+  <path d="M 200,570 L 540,560" fill="none" stroke="#3a2f24" stroke-width="0.8" opacity="0.4"/>
+  <path d="M 660,570 L 1000,560" fill="none" stroke="#3a2f24" stroke-width="0.8" opacity="0.4"/>
+  <path d="M 240,520 C 380,512 480,505 580,500" fill="none" stroke="#3a2f24" stroke-width="0.6" opacity="0.3"/>
+  <path d="M 620,500 C 720,505 820,512 960,520" fill="none" stroke="#3a2f24" stroke-width="0.6" opacity="0.3"/>
+</svg>
