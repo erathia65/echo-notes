@@ -1,13 +1,12 @@
-/* echo-notes — hand-written stylesheet, two typefaces, one accent.
-   v3: the dark library. Palette inverted, lamps unchanged. */
+/* echo-notes — hand-written stylesheet, two typefaces, one accent. */
 
 :root {
-  --fg: #e8e4d8;          /* warm cream — the v1 parchment, now used as text */
-  --bg: #0e0e0e;          /* near-black, not pure */
-  --muted: #7a7670;       /* desaturated mid-tone for meta */
-  --accent: #c97064;      /* warm red, brighter than v1's brick */
-  --rule: #2a2a28;        /* dark warm gray for borders */
-  --panel: rgba(14, 14, 14, 0.7);  /* dark translucent panel for post text */
+  --fg: #1a1a1a;
+  --bg: #fafaf7;
+  --muted: #6a6a66;
+  --accent: #8b3a3a;
+  --rule: #e5e3dd;
+  --panel: rgba(250, 250, 247, 0.85);
 }
 
 * { box-sizing: border-box; }
@@ -27,29 +26,6 @@ html {
    library SVG (fixed, behind everything) is visible through the
    translucent article panel. The home page keeps the solid bg. */
 html.post, body.post { background: transparent; }
-
-/* Home page: library is a quiet hint, not atmosphere. The post
-   list is rendered as small cards on top of the page background. */
-body.home .library-bg {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-  opacity: 0.25;
-  pointer-events: none;
-}
-
-body.home .post-list { list-style: none; padding: 0; margin: 2rem 0; }
-body.home .post-list li {
-  background: var(--panel);
-  padding: 1.5rem 1.75rem;
-  border: 1px solid var(--rule);
-  margin-bottom: 1rem;
-}
-body.home .post-list li:last-child { margin-bottom: 0; }
-body.home .lede { color: var(--muted); margin-top: -0.5rem; }
 
 body {
   max-width: 70ch;
@@ -144,26 +120,11 @@ article header .post-date {
   pointer-events: none;
 }
 
-/* v3 round 1: the procedurally generated 3D library. Sits behind
-   everything on post pages (z-index -2, below the article panel and
-   any other library signal). Pointer-events none so the post text
-   can be selected. */
-.library-3d {
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  display: block;
-}
-
 /* Post body becomes a translucent panel so the library atmosphere
    reads around the text instead of behind it. No shadow, no radius;
    the v1 aesthetic is sharp. */
 body.post article {
   position: relative;
-  z-index: 1;  /* sit above the 3D canvas (z-index -2) and any library-bg (z-index -1) */
   background: var(--panel);
   padding: 2rem 2.5rem;
   border: 1px solid var(--rule);
@@ -187,25 +148,6 @@ body.post .post-meta {
   50%      { opacity: 0.7; }
 }
 
-/* Gallery page: full-bleed rooms in the 70ch column. */
-body.gallery figure.room { margin: 2.5rem 0; }
-body.gallery figure.room svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  border: 1px solid var(--rule);
-  background: var(--bg);
-}
-body.gallery figcaption {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-               "Helvetica Neue", Arial, sans-serif;
-  font-size: 0.8125rem;
-  color: var(--muted);
-  letter-spacing: 0.02em;
-  margin-top: 0.6rem;
-  text-align: center;
-}
-
 blockquote {
   margin: 1.5rem 0;
   padding-left: 1.25rem;
@@ -217,10 +159,9 @@ blockquote {
 code {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-size: 0.9em;
-  background: #1a1814;  /* darker than the page bg, slight warm tint */
+  background: #f0eee8;
   padding: 0.1em 0.3em;
   border-radius: 2px;
-  color: var(--fg);
 }
 
 hr {
