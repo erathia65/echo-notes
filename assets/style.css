@@ -1,12 +1,13 @@
-/* echo-notes — hand-written stylesheet, two typefaces, one accent. */
+/* echo-notes — hand-written stylesheet, two typefaces, one accent.
+   v3: the dark library. Palette inverted, lamps unchanged. */
 
 :root {
-  --fg: #1a1a1a;
-  --bg: #fafaf7;
-  --muted: #6a6a66;
-  --accent: #8b3a3a;
-  --rule: #e5e3dd;
-  --panel: rgba(250, 250, 247, 0.85);
+  --fg: #e8e4d8;          /* warm cream — the v1 parchment, now used as text */
+  --bg: #0e0e0e;          /* near-black, not pure */
+  --muted: #7a7670;       /* desaturated mid-tone for meta */
+  --accent: #c97064;      /* warm red, brighter than v1's brick */
+  --rule: #2a2a28;        /* dark warm gray for borders */
+  --panel: rgba(14, 14, 14, 0.7);  /* dark translucent panel for post text */
 }
 
 * { box-sizing: border-box; }
@@ -201,9 +202,10 @@ blockquote {
 code {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-size: 0.9em;
-  background: #f0eee8;
+  background: #1a1814;  /* darker than the page bg, slight warm tint */
   padding: 0.1em 0.3em;
   border-radius: 2px;
+  color: var(--fg);
 }
 
 hr {
