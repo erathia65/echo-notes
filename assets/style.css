@@ -27,6 +27,29 @@ html {
    translucent article panel. The home page keeps the solid bg. */
 html.post, body.post { background: transparent; }
 
+/* Home page: library is a quiet hint, not atmosphere. The post
+   list is rendered as small cards on top of the page background. */
+body.home .library-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+body.home .post-list { list-style: none; padding: 0; margin: 2rem 0; }
+body.home .post-list li {
+  background: var(--panel);
+  padding: 1.5rem 1.75rem;
+  border: 1px solid var(--rule);
+  margin-bottom: 1rem;
+}
+body.home .post-list li:last-child { margin-bottom: 0; }
+body.home .lede { color: var(--muted); margin-top: -0.5rem; }
+
 body {
   max-width: 70ch;
   margin: 3rem auto 6rem;
@@ -146,6 +169,25 @@ body.post .post-meta {
 @keyframes lamp-breathe {
   0%, 100% { opacity: 1; }
   50%      { opacity: 0.7; }
+}
+
+/* Gallery page: full-bleed rooms in the 70ch column. */
+body.gallery figure.room { margin: 2.5rem 0; }
+body.gallery figure.room svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+}
+body.gallery figcaption {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  margin-top: 0.6rem;
+  text-align: center;
 }
 
 blockquote {
