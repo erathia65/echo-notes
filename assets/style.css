@@ -1,0 +1,125 @@
+/* echo-notes — hand-written stylesheet, two typefaces, one accent. */
+
+:root {
+  --fg: #1a1a1a;
+  --bg: #fafaf7;
+  --muted: #6a6a66;
+  --accent: #8b3a3a;
+  --rule: #e5e3dd;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Iowan Old Style", "Apple Garamond", Baskerville,
+               "Times New Roman", Georgia, serif;
+  font-size: 18px;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  max-width: 70ch;
+  margin: 3rem auto 6rem;
+  padding: 0 1.25rem;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+a:hover { border-bottom-color: var(--accent); }
+
+nav, footer, .post-meta {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 3rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+nav .site-name {
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: 0.02em;
+}
+
+footer {
+  margin-top: 4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+
+h1, h2, h3 {
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+h1 { font-size: 1.75rem; margin: 0 0 0.5rem; }
+h2 { font-size: 1.25rem; margin: 2rem 0 0.5rem; }
+h3 { font-size: 1.0625rem; margin: 1.5rem 0 0.5rem; }
+
+p { margin: 0 0 1rem; }
+
+.post-list { list-style: none; padding: 0; margin: 2rem 0; }
+.post-list li {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.post-list li:last-child { border-bottom: 0; }
+.post-list .post-title { font-weight: 600; font-size: 1.125rem; }
+.post-list .post-excerpt {
+  color: var(--muted);
+  margin-top: 0.4rem;
+  font-size: 0.95rem;
+}
+.post-list .post-date {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  margin-bottom: 0.25rem;
+}
+
+article header { margin-bottom: 2rem; }
+article header .post-date {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  margin-top: 0.5rem;
+}
+
+blockquote {
+  margin: 1.5rem 0;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--rule);
+  color: var(--muted);
+  font-style: italic;
+}
+
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: #f0eee8;
+  padding: 0.1em 0.3em;
+  border-radius: 2px;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 2rem 0;
+}
