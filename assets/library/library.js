@@ -167,13 +167,15 @@
 
   const booksPerShelfTotal = [];  // for diagnostics
 
+  // Hoisted so the optional second lamp can use it.
+  const totalWidth = 3 * SHELF_WIDTH + 2 * SHELF_GAP;
+  const zStart = -totalWidth / 2 + SHELF_WIDTH / 2;
+
   for (let side = 0; side < 2; side++) {
     // side: 0 = left wall (x = -SHELF_X), 1 = right wall (x = +SHELF_X)
     const wallX = (side === 0 ? -1 : 1) * SHELF_X;
 
     // z positions of the 3 shelves on this wall, evenly spaced
-    const totalWidth = 3 * SHELF_WIDTH + 2 * SHELF_GAP;
-    const zStart = -totalWidth / 2 + SHELF_WIDTH / 2;
     const shelfZs = [];
     for (let i = 0; i < 3; i++) {
       shelfZs.push(zStart + i * (SHELF_WIDTH + SHELF_GAP));
