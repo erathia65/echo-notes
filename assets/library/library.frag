@@ -6,6 +6,8 @@
 // The room is dark except where the lamp's light reaches.
 // The lamp itself glows from within (an additive sphere around its position).
 
+precision highp float;
+
 in vec3 v_worldPos;
 in vec3 v_normal;
 
