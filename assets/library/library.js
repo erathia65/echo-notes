@@ -14,6 +14,7 @@
 (function () {
   'use strict';
 
+  try {
   console.log('[library] script loaded');
 
   const canvas = document.querySelector('.library-3d');
@@ -511,5 +512,9 @@
       }
     }
     return out;
+  }
+  } catch (err) {
+    console.error('[library] caught error:', err && err.message ? err.message : err);
+    if (err && err.stack) console.error(err.stack);
   }
 })();
