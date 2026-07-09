@@ -466,13 +466,26 @@
 
     // Camera breathing: 0.5° horizontal sway, 8s period.
     const yawRad = Math.sin(t * 2 * Math.PI / 8) * (0.5 * Math.PI / 180);
-    const cosY = Math.cos(yawRad), sinY = Math.sin(yawRad);
-    // Rotate the lookAt target around the camera on Y axis.
+    // Manual yaw/pitch from arrow keys (debug)
+    const manualYaw = (window.__libraryYaw || 0) * Math.PI / 180;
+    const manualPitch = (window.__libraryPitch || 0) * Math.PI / 180;
+    const totalYaw = yawRad + manualYaw;
+    const cosY = Math.cos(totalYaw), sinY = Math.sin(totalYaw);
+    const cosP = Math.cos(manualPitch), sinP = Math.sin(manualPitch);
+    // Rotate the lookAt target around the camera on Y, then pitch.
     const dx = CAMERA_TARGET_BASE[0] - CAMERA_BASE[0];
+    const dy = CAMERA_TARGET_BASE[1] - CAMERA_BASE[1];
     const dz = CAMERA_TARGET_BASE[2] - CAMERA_BASE[2];
-    const targetX = CAMERA_BASE[0] + dx * cosY - dz * sinY;
-    const targetZ = CAMERA_BASE[2] + dx * sinY + dz * cosY;
-    const view = mat4LookAt(CAMERA_BASE, [targetX, CAMERA_TARGET_BASE[1], targetZ], [0, 1, 0]);
+    // Yaw (around world Y)
+    const x1 = dx * cosY - dz * sinY;
+    const z1 = dx * sinY + dz * cosY;
+    // Pitch (around the local right axis after yaw)
+    const y2 = dy * cosP - z1 * sinP;
+    const z2 = dy * sinP + z1 * cosP;
+    const targetX = CAMERA_BASE[0] + x1;
+    const targetY = CAMERA_BASE[1] + y2;
+    const targetZ = CAMERA_BASE[2] + z2;
+    const view = mat4LookAt(CAMERA_BASE, [targetX, targetY, targetZ], [0, 1, 0]);
 
     // Lamp flicker: 0.95..1.0 over a 4s period.
     const lampIntensity = 0.95 + 0.05 * Math.sin(t * 2 * Math.PI / 4);
@@ -490,7 +503,7 @@
     gl.uniform3fv(uniforms.uLampPos, LAMP_POS);
     gl.uniform3fv(uniforms.uLampColor, LAMP_COLOR);
     gl.uniform1f(uniforms.uLampIntensity, lampIntensity);
-    gl.uniform1f(uniforms.uAmbient, 0.10);
+    gl.uniform1f(uniforms.uAmbient, 0.25);
 
     // Draw
     gl.bindVertexArray(vao);
@@ -513,6 +526,20 @@
     }
     return out;
   }
+
+  // ---- Debug: keyboard controls (crash test) ----
+  window.__libraryYaw = 0;
+  window.__libraryPitch = 0;
+  window.addEventListener('keydown', (e) => {
+    const step = 8;  // degrees per keypress
+    if (e.key === 'ArrowLeft')  window.__libraryYaw -= step;
+    if (e.key === 'ArrowRight') window.__libraryYaw += step;
+    if (e.key === 'ArrowUp')    window.__libraryPitch -= step;
+    if (e.key === 'ArrowDown')  window.__libraryPitch += step;
+    if (e.key === '0') { window.__libraryYaw = 0; window.__libraryPitch = 0; }
+    console.log('[library] yaw=', window.__libraryYaw, 'pitch=', window.__libraryPitch);
+  });
+
   } catch (err) {
     console.error('[library] caught error:', err && err.message ? err.message : err);
     if (err && err.stack) console.error(err.stack);
