@@ -228,7 +228,25 @@
 
   const merged = mergeMeshes(meshes);
   const triangleCount = merged.indices.length / 3;
-  console.log('[library] triangles:', triangleCount, 'verts:', merged.vertices.length / 7);
+  const vertCount = merged.vertices.length / 7;
+  console.log('[library] triangles:', triangleCount, 'verts:', vertCount);
+
+  // Compute bounding box to verify the merge produced real geometry
+  let minX=Infinity, minY=Infinity, minZ=Infinity;
+  let maxX=-Infinity, maxY=-Infinity, maxZ=-Infinity;
+  let nanCount = 0;
+  for (let i = 0; i < merged.vertices.length; i += 7) {
+    const x = merged.vertices[i+0];
+    const y = merged.vertices[i+1];
+    const z = merged.vertices[i+2];
+    if (Number.isNaN(x) || Number.isNaN(y) || Number.isNaN(z)) { nanCount++; continue; }
+    if (x < minX) minX = x; if (x > maxX) maxX = x;
+    if (y < minY) minY = y; if (y > maxY) maxY = y;
+    if (z < minZ) minZ = z; if (z > maxZ) maxZ = z;
+  }
+  console.log('[library] bbox min=(' + minX.toFixed(2) + ',' + minY.toFixed(2) + ',' + minZ.toFixed(2) + ') max=(' + maxX.toFixed(2) + ',' + maxY.toFixed(2) + ',' + maxZ.toFixed(2) + ') NaN=' + nanCount);
+  console.log('[library] first vertex:', merged.vertices[0], merged.vertices[1], merged.vertices[2], merged.vertices[3], merged.vertices[4], merged.vertices[5], merged.vertices[6]);
+  console.log('[library] first 6 indices:', merged.indices[0], merged.indices[1], merged.indices[2], merged.indices[3], merged.indices[4], merged.indices[5]);
 
   const vao = gl.createVertexArray();
   gl.bindVertexArray(vao);
