@@ -34,13 +34,15 @@ void main() {
   // Diffuse term: surfaces facing the lamp catch more light.
   float ndl = max(dot(N, L), 0.0);
 
-  // Inverse-square falloff. Softened with a small constant to keep
-  // the lamp's reach readable rather than vanishing in 1m.
-  float falloff = 1.0 / (0.3 + 0.5 * lampDist + 0.08 * lampDist * lampDist);
+  // Inverse-square falloff. Tuned for visibility: at d=2 the falloff
+  // is ~0.7, at d=4 it's ~0.3, at d=8 it's still ~0.1. The lamp
+  // lights most of the visible room.
+  float falloff = 1.0 / (0.2 + 0.3 * lampDist + 0.04 * lampDist * lampDist);
 
-  // Surface tint: very dark gray-brown. Per-vertex color would be
-  // better but for Round 1 a single material is fine.
-  vec3 surface = vec3(0.18, 0.16, 0.13);
+  // Surface tint: a medium gray-brown, lifted so the geometry is
+  // visible against near-black. Per-vertex color would be better
+  // but for Round 1 a single material is fine.
+  vec3 surface = vec3(0.42, 0.38, 0.32);
 
   vec3 lampContribution = u_lampColor * ndl * falloff * u_lampIntensity;
   vec3 color = ambient * surface + surface * lampContribution;
@@ -49,13 +51,13 @@ void main() {
   // term so the lamp itself reads as bright regardless of surface
   // normal. This is a hack for Round 1; Round 2 will replace with the
   // proper sonar shader.
-  float lampProximity = 1.0 / (0.1 + 0.5 * lampDist * lampDist);
-  color += u_lampColor * lampProximity * 0.6 * u_lampIntensity;
+  float lampProximity = 1.0 / (0.05 + 0.3 * lampDist * lampDist);
+  color += u_lampColor * lampProximity * 1.5 * u_lampIntensity;
 
   // Distance fog: fade the back of the room into the page background.
   // (The page bg is near-black; the fog color matches.)
   float fogDist = length(v_worldPos - u_cameraPos);
-  float fog = clamp((fogDist - 4.0) / 10.0, 0.0, 0.85);
+  float fog = clamp((fogDist - 6.0) / 14.0, 0.0, 0.7);
   vec3 fogColor = vec3(0.055, 0.055, 0.055);
   color = mix(color, fogColor, fog);
 
