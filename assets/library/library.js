@@ -265,8 +265,8 @@
     resize();
 
     // ---- Camera & lighting ----
-    const eye = [0, 1, 3];
-    const target = [0, 0, 0];
+    const eye = [0, 2, 5];
+    const target = [0, 0.5, 0];
     const up = [0, 1, 0];
     const projection = mat4Perspective((60 * Math.PI) / 180, canvas.width / canvas.height, 0.1, 100);
     const view = mat4LookAt(eye, target, up);
