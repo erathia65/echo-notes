@@ -153,7 +153,7 @@
       }
       return { vertices: new Float32Array(verts), indices: new Uint16Array(idx) };
     }
-    const sphere = makeSphere(0.10, 16, 12);  // 0.10m radius lamp
+    const sphere = makeSphere(0.30, 16, 12);  // 0.30m radius lamp (DEBUG: large)
     console.log('[library] sphere: verts=', sphere.vertices.length/6, 'tris=', sphere.indices.length/3);
 
     // ---- Cube VAO ----
@@ -277,6 +277,7 @@
     const lampBase = mat4Translation(LAMP_POS[0], LAMP_POS[1], LAMP_POS[2]);
 
     console.log('[library] scene: cube at origin, lamp at', LAMP_POS, 'camera at', eye);
+  console.log('[library] sphere translated by LAMP_POS, expected world (0, 2.5, 1.5)');
 
     const start = performance.now();
     function loop() {
@@ -313,6 +314,7 @@
       gl.uniform1f(uLampLampIntensity, 1.0);
       gl.bindVertexArray(lampVao);
       gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
+      if (!window.__sphereDrawn) { console.log('[library] sphere draw call fired, count=', sphere.indices.length / 3, 'tris'); window.__sphereDrawn = true; }
 
       requestAnimationFrame(loop);
     }
