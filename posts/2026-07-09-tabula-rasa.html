@@ -3,38 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tabula — debug</title>
+  <title>Tabula — echo-library</title>
 </head>
 <body>
-  <canvas id="lib3d" style="position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;z-index:-1"></canvas>
+  <canvas class="library-3d"></canvas>
   <div style="position:relative;z-index:1;color:#e8e4d8;max-width:60ch;margin:6rem auto;padding:0 1.5rem;font-family:serif;font-size:18px;line-height:1.6">
     <h1>Tabula rasa, but not really</h1>
-    <p>WebGL debug page. If you can read this, the page works. Look around: the 3D library should be behind the text. Use arrow keys to rotate, 0 to reset.</p>
-    <p>This page has <em>nothing</em> except the canvas, the text, and the WebGL script. No CSS, no nav, no footer.</p>
+    <p>The 3D library is now loaded. Arrow keys to rotate, 0 to reset. The lit room should be behind this text.</p>
   </div>
-  <script type="module">
-    // Inline a copy of the library bootstrap to avoid any caching
-    // and to confirm the canvas is the right size.
-    console.log('[debug] inline script running');
-    const canvas = document.getElementById('lib3d');
-    console.log('[debug] canvas:', canvas, 'size:', canvas.width, 'x', canvas.height);
-    // Resize to match the device
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    canvas.width = Math.floor(window.innerWidth * dpr);
-    canvas.height = Math.floor(window.innerHeight * dpr);
-    console.log('[debug] canvas resized to:', canvas.width, 'x', canvas.height);
-
-    const gl = canvas.getContext('webgl2');
-    if (!gl) {
-      console.warn('[debug] no WebGL 2');
-    } else {
-      console.log('[debug] WebGL 2 context OK');
-      // Clear to bright red so we can see if the canvas is rendering
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.clearColor(1.0, 0.0, 0.0, 1.0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      console.log('[debug] cleared to red');
-    }
-  </script>
+  <script type="module" src="../assets/library/library.js?v=21"></script>
 </body>
 </html>
