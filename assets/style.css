@@ -43,7 +43,7 @@ body.home .library-bg {
 
 body.home .post-list { list-style: none; padding: 0; margin: 2rem 0; }
 body.home .post-list li {
-  background: rgba(14, 14, 14, 0.35);  /* more transparent so 3D shows through */
+  background: transparent;  /* DEBUG: panel fully transparent to confirm 3D shows */
   padding: 1.5rem 1.75rem;
   border: 1px solid var(--rule);
   margin-bottom: 1rem;
