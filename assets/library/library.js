@@ -109,22 +109,61 @@
     if (!cubeProgram || !lampProgram) return;
     console.log('[library] both programs linked');
 
-    // ---- Cube geometry: 24 vertices (4 per face), 36 indices ----
+    // ---- Room geometry: 6 walls + a desk (a cube for now) ----
+    // 6 walls (4 verts each) + 1 desk cube (24 verts) = 48 verts total
+    // 6 walls (2 tris each) + 1 desk (12 tris) = 24 triangles
     const cubeVerts = new Float32Array([
-      0.5,-0.5,-0.5,  1,0,0,   0.5, 0.5,-0.5,  1,0,0,   0.5, 0.5, 0.5,  1,0,0,   0.5,-0.5, 0.5,  1,0,0,
-     -0.5,-0.5, 0.5, -1,0,0,  -0.5, 0.5, 0.5, -1,0,0,  -0.5, 0.5,-0.5, -1,0,0,  -0.5,-0.5,-0.5, -1,0,0,
-     -0.5, 0.5,-0.5,  0,1,0,  -0.5, 0.5, 0.5,  0,1,0,   0.5, 0.5, 0.5,  0,1,0,   0.5, 0.5,-0.5,  0,1,0,
-     -0.5,-0.5, 0.5,  0,-1,0, -0.5,-0.5,-0.5,  0,-1,0,  0.5,-0.5,-0.5,  0,-1,0,  0.5,-0.5, 0.5,  0,-1,0,
-     -0.5,-0.5, 0.5,  0,0,1,   0.5,-0.5, 0.5,  0,0,1,   0.5, 0.5, 0.5,  0,0,1,  -0.5, 0.5, 0.5,  0,0,1,
-      0.5,-0.5,-0.5,  0,0,-1, -0.5,-0.5,-0.5,  0,0,-1, -0.5, 0.5,-0.5,  0,0,-1,  0.5, 0.5,-0.5,  0,0,-1,
+      -6,0,-4,0,1,0,
+      6,0,-4,0,1,0,
+      6,0,4,0,1,0,
+      -6,0,4,0,1,0,
+      -6,4,-4,0,-1,0,
+      6,4,-4,0,-1,0,
+      6,4,4,0,-1,0,
+      -6,4,4,0,-1,0,
+      -6,0,4,0,0,-1,
+      6,0,4,0,0,-1,
+      6,4,4,0,0,-1,
+      -6,4,4,0,0,-1,
+      -6,0,-4,0,0,1,
+      6,0,-4,0,0,1,
+      6,4,-4,0,0,1,
+      -6,4,-4,0,0,1,
+      -6,0,-4,1,0,0,
+      -6,4,-4,1,0,0,
+      -6,4,4,1,0,0,
+      -6,0,4,1,0,0,
+      6,0,-4,-1,0,0,
+      6,4,-4,-1,0,0,
+      6,4,4,-1,0,0,
+      6,0,4,-1,0,0,
+      0.6,0,1.7,1,0,0,
+      0.6,0.75,1.7,1,0,0,
+      0.6,0.75,2.3,1,0,0,
+      0.6,0,2.3,1,0,0,
+      -0.6,0,2.3,-1,0,0,
+      -0.6,0.75,2.3,-1,0,0,
+      -0.6,0.75,1.7,-1,0,0,
+      -0.6,0,1.7,-1,0,0,
+      -0.6,0.75,1.7,0,1,0,
+      -0.6,0.75,2.3,0,1,0,
+      0.6,0.75,2.3,0,1,0,
+      0.6,0.75,1.7,0,1,0,
+      -0.6,0,2.3,0,-1,0,
+      -0.6,0,1.7,0,-1,0,
+      0.6,0,1.7,0,-1,0,
+      0.6,0,2.3,0,-1,0,
+      -0.6,0,2.3,0,0,1,
+      0.6,0,2.3,0,0,1,
+      0.6,0.75,2.3,0,0,1,
+      -0.6,0.75,2.3,0,0,1,
+      0.6,0,1.7,0,0,-1,
+      -0.6,0,1.7,0,0,-1,
+      -0.6,0.75,1.7,0,0,-1,
+      0.6,0.75,1.7,0,0,-1
     ]);
     const cubeIdx = new Uint16Array([
-      0,1,2, 0,2,3,
-      4,5,6, 4,6,7,
-      8,9,10, 8,10,11,
-      12,13,14, 12,14,15,
-      16,17,18, 16,18,19,
-      20,21,22, 20,22,23,
+      0,1,2,0,2,3,4,5,6,4,6,7,8,9,10,8,10,11,12,13,14,12,14,15,16,17,18,16,18,19,20,21,22,20,22,23,24,25,26,24,26,27,28,29,30,28,30,31,32,33,34,32,34,35,36,37,38,36,38,39,40,41,42,40,42,43,44,45,46,44,46,47
     ]);
 
     // ---- Sphere geometry: UV sphere, 16 segments x 12 rings ----
@@ -155,6 +194,7 @@
     }
     const sphere = makeSphere(0.30, 16, 12);  // 0.30m radius lamp (DEBUG: large)
     console.log('[library] sphere: verts=', sphere.vertices.length/6, 'tris=', sphere.indices.length/3);
+  console.log('[library] room: 48 verts, 24 triangles (6 walls + desk)');
 
     // ---- Cube VAO ----
     const cubeVao = gl.createVertexArray();
@@ -272,8 +312,6 @@
     const view = mat4LookAt(eye, target, up);
     const LAMP_POS = [0, 2.5, 1.5];
     const LAMP_COLOR = [0.957, 0.847, 0.537];  // #f4d889
-    const cubeColor = [0.6, 0.45, 0.30];  // warm brown
-    const cubeBase = mat4Translation(0, 0, 0);  // cube at origin
     const lampBase = mat4Translation(LAMP_POS[0], LAMP_POS[1], LAMP_POS[2]);
 
     console.log('[library] scene: cube at origin, lamp at', LAMP_POS, 'camera at', eye);
@@ -282,9 +320,7 @@
     const start = performance.now();
     function loop() {
       const t = (performance.now() - start) / 1000;
-      // Cube rotates around Y, slowly
-      const cubeModel = mat4Multiply(mat4RotationY(t * (2 * Math.PI / 10)), cubeBase);
-      // Lamp doesn't rotate; static
+      // Room is static; lamp doesn't rotate
       const lampModel = lampBase;
 
       gl.viewport(0, 0, canvas.width, canvas.height);
@@ -292,18 +328,32 @@
       gl.clearColor(0.055, 0.055, 0.055, 1.0);  // dark bg
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-      // ---- Draw the cube (lit by the lamp) ----
+      // ---- Draw the room (4 draw calls, one per material group) ----
       gl.useProgram(cubeProgram);
       gl.uniformMatrix4fv(uCubeProjection, false, projection);
       gl.uniformMatrix4fv(uCubeView, false, view);
-      gl.uniformMatrix4fv(uCubeModel, false, cubeModel);
+      gl.uniformMatrix4fv(uCubeModel, false, mat4Identity());
       gl.uniform3fv(uCubeLampPos, LAMP_POS);
       gl.uniform3fv(uCubeLampColor, LAMP_COLOR);
       gl.uniform1f(uCubeLampIntensity, 1.0);
       gl.uniform1f(uCubeAmbient, 0.05);
-      gl.uniform3fv(uCubeBaseColor, cubeColor);
       gl.bindVertexArray(cubeVao);
-      gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
+
+      // Floor (dark wood-gray)
+      gl.uniform3fv(uCubeBaseColor, [0.18, 0.16, 0.14]);
+      gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+
+      // Ceiling (slightly lighter, lamp reflects from it)
+      gl.uniform3fv(uCubeBaseColor, [0.22, 0.20, 0.18]);
+      gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 6*2);
+
+      // 4 walls (warm off-white)
+      gl.uniform3fv(uCubeBaseColor, [0.55, 0.50, 0.42]);
+      gl.drawElements(gl.TRIANGLES, 24, gl.UNSIGNED_SHORT, 12*2);
+
+      // Desk (dark wood)
+      gl.uniform3fv(uCubeBaseColor, [0.18, 0.16, 0.14]);
+      gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 36*2);
 
       // ---- Draw the lamp sphere (fully bright) ----
       gl.useProgram(lampProgram);
