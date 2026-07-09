@@ -490,7 +490,7 @@
     gl.uniform3fv(uniforms.uLampPos, LAMP_POS);
     gl.uniform3fv(uniforms.uLampColor, LAMP_COLOR);
     gl.uniform1f(uniforms.uLampIntensity, lampIntensity);
-    gl.uniform1f(uniforms.uAmbient, 0.04);
+    gl.uniform1f(uniforms.uAmbient, 0.10);
 
     // Draw
     gl.bindVertexArray(vao);
