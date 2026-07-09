@@ -387,6 +387,17 @@
     uniforms.uLampIntensity = gl.getUniformLocation(program, 'u_lampIntensity');
     uniforms.uAmbient = gl.getUniformLocation(program, 'u_ambient');
 
+    console.log('[library] uniform locations:', JSON.stringify({
+      uViewProjection: !!uniforms.uViewProjection,
+      uModel: !!uniforms.uModel,
+      uCameraPos: !!uniforms.uCameraPos,
+      uLampPos: !!uniforms.uLampPos,
+      uLampColor: !!uniforms.uLampColor,
+      uLampIntensity: !!uniforms.uLampIntensity,
+      uAmbient: !!uniforms.uAmbient,
+    }));
+    console.log('[library] camera=', CAMERA_BASE, 'lamp=', LAMP_POS, 'canvas size=', canvas.width, 'x', canvas.height);
+
     requestAnimationFrame(loop);
   })();
 
@@ -404,8 +415,13 @@
   });
 
   const startTime = performance.now();
+  let firstFrameLogged = false;
 
   function loop(now) {
+    if (!firstFrameLogged) {
+      console.log('[library] first frame: triangles=', triangleCount, 'indices.length=', merged.indices.length);
+      firstFrameLogged = true;
+    }
     if (document.hidden) {
       requestAnimationFrame(loop);
       return;
