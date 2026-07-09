@@ -268,7 +268,7 @@
     const eye = [0, 1, 3];
     const target = [0, 0, 0];
     const up = [0, 1, 0];
-    const projection = mat4Perspective((45 * Math.PI) / 180, canvas.width / canvas.height, 0.1, 100);
+    const projection = mat4Perspective((60 * Math.PI) / 180, canvas.width / canvas.height, 0.1, 100);
     const view = mat4LookAt(eye, target, up);
     const LAMP_POS = [0, 2.5, 1.5];
     const LAMP_COLOR = [0.957, 0.847, 0.537];  // #f4d889
