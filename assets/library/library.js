@@ -305,8 +305,8 @@
     resize();
 
     // ---- Camera & lighting ----
-    const eye = [0, 2, 5];
-    const target = [0, 0.5, 0];
+    const eye = [0, 1.6, -2.5];
+    const target = [0, 1.5, 4];
     const up = [0, 1, 0];
     const projection = mat4Perspective((60 * Math.PI) / 180, canvas.width / canvas.height, 0.1, 100);
     const view = mat4LookAt(eye, target, up);
@@ -314,7 +314,7 @@
     const LAMP_COLOR = [0.957, 0.847, 0.537];  // #f4d889
     const lampBase = mat4Translation(LAMP_POS[0], LAMP_POS[1], LAMP_POS[2]);
 
-    console.log('[library] scene: cube at origin, lamp at', LAMP_POS, 'camera at', eye);
+    console.log('[library] camera at (0, 1.6, -2.5) looking at (0, 1.5, 4)');
   console.log('[library] sphere translated by LAMP_POS, expected world (0, 2.5, 1.5)');
 
     const start = performance.now();
