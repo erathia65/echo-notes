@@ -14,8 +14,11 @@
 (function () {
   'use strict';
 
+  console.log('[library] script loaded');
+
   const canvas = document.querySelector('.library-3d');
-  if (!canvas) return;
+  if (!canvas) { console.warn('[library] no .library-3d canvas found'); return; }
+  console.log('[library] canvas found', canvas);
 
   const gl = canvas.getContext('webgl2', { antialias: true, alpha: false });
   if (!gl) {
@@ -23,6 +26,7 @@
     console.warn('[library] WebGL 2 unavailable; static dark fallback.');
     return;
   }
+  console.log('[library] WebGL 2 context OK');
 
   // ---------- Geometry helpers ----------
 
