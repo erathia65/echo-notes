@@ -1,10 +1,8 @@
-// echo-library — baseline WebGL 2 scene.
-// Single rotating cube, Phong lighting, perspective camera.
-// No async, no separate shader files, no merged arrays. One cube.
+// echo-library — Step 2: point light + lamp sphere.
+// Cube lit by a single point light at (0, 2.5, 1.5) with inverse-square
+// falloff. The lamp itself is a small warm sphere, fully bright.
 //
-// Loaded only on post pages. Graceful fallback: if WebGL 2 is
-// unavailable, the canvas stays empty and the post page reads on
-// its own.
+// Shaders inlined. No async. No merged arrays.
 
 (function () {
   'use strict';
@@ -16,8 +14,7 @@
     if (!canvas) { console.warn('[library] no .library-3d canvas found'); return; }
     console.log('[library] canvas found', canvas);
 
-    // Make sure the canvas is fixed full-viewport, behind everything.
-    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;z-index:-1;pointer-events:none;background:#1a1a1a';
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;z-index:-1;pointer-events:none;background:#0e0e0e';
 
     const gl = canvas.getContext('webgl2', { antialias: true, alpha: false });
     if (!gl) {
@@ -26,8 +23,8 @@
     }
     console.log('[library] WebGL 2 context OK');
 
-    // ---- Vertex shader: position + normal -> world space, pass to frag ----
-    const vsSrc = `#version 300 es
+    // ---- Cube vertex shader: pass world position + world normal ----
+    const cubeVsSrc = `#version 300 es
       in vec3 a_position;
       in vec3 a_normal;
       uniform mat4 u_projection;
@@ -43,27 +40,41 @@
       }
     `;
 
-    // ---- Fragment shader: Phong (ambient + diffuse + specular) ----
-    const fsSrc = `#version 300 es
+    // ---- Cube fragment shader: ambient + 1 point light ----
+    const cubeFsSrc = `#version 300 es
       precision highp float;
       in vec3 v_worldNormal;
       in vec3 v_worldPos;
-      uniform vec3 u_lightDir;       // direction TO the light
-      uniform vec3 u_cameraPos;
+      uniform vec3 u_lampPos;
+      uniform vec3 u_lampColor;
+      uniform float u_lampIntensity;
+      uniform float u_ambient;
       uniform vec3 u_baseColor;
       out vec4 outColor;
       void main() {
         vec3 N = normalize(v_worldNormal);
-        vec3 L = normalize(u_lightDir);
-        vec3 V = normalize(u_cameraPos - v_worldPos);
-        vec3 R = reflect(-L, N);
+        vec3 toLamp = u_lampPos - v_worldPos;
+        float dist = length(toLamp);
+        vec3 L = toLamp / max(dist, 0.0001);
+        float ndl = max(dot(N, L), 0.0);
+        float atten = 1.0 / (1.0 + dist * dist * 0.5);
+        vec3 lighting = vec3(u_ambient) + u_lampColor * u_lampIntensity * ndl * atten;
+        outColor = vec4(u_baseColor * lighting, 1.0);
+      }
+    `;
 
-        float ambient = 0.15;
-        float diffuse = max(dot(N, L), 0.0);
-        float specular = pow(max(dot(R, V), 0.0), 32.0) * 0.5;
-
-        vec3 color = u_baseColor * (ambient + diffuse) + vec3(1.0) * specular;
-        outColor = vec4(color, 1.0);
+    // ---- Lamp vertex shader (identity transform, but u_model places it) ----
+    const lampVsSrc = cubeVsSrc;
+    // ---- Lamp fragment shader: fully bright, no falloff ----
+    const lampFsSrc = `#version 300 es
+      precision highp float;
+      in vec3 v_worldNormal;
+      in vec3 v_worldPos;
+      uniform vec3 u_lampColor;
+      uniform float u_lampIntensity;
+      out vec4 outColor;
+      void main() {
+        outColor = vec4(u_lampColor * u_lampIntensity * 1.5, 1.0);
       }
     `;
 
@@ -77,115 +88,131 @@
       }
       return sh;
     }
-    const vs = compile(gl.VERTEX_SHADER, vsSrc);
-    const fs = compile(gl.FRAGMENT_SHADER, fsSrc);
-    if (!vs || !fs) return;
-    const program = gl.createProgram();
-    gl.attachShader(program, vs);
-    gl.attachShader(program, fs);
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error('[library] link error:', gl.getProgramInfoLog(program));
-      return;
+    function linkProgram(vs, fs) {
+      const p = gl.createProgram();
+      gl.attachShader(p, vs);
+      gl.attachShader(p, fs);
+      gl.linkProgram(p);
+      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+        console.error('[library] link error:', gl.getProgramInfoLog(p));
+        return null;
+      }
+      return p;
     }
-    gl.useProgram(program);
-    console.log('[library] program linked');
+    const cubeVs = compile(gl.VERTEX_SHADER, cubeVsSrc);
+    const cubeFs = compile(gl.FRAGMENT_SHADER, cubeFsSrc);
+    const lampVs = compile(gl.VERTEX_SHADER, lampVsSrc);
+    const lampFs = compile(gl.FRAGMENT_SHADER, lampFsSrc);
+    if (!cubeVs || !cubeFs || !lampVs || !lampFs) return;
+    const cubeProgram = linkProgram(cubeVs, cubeFs);
+    const lampProgram = linkProgram(lampVs, lampFs);
+    if (!cubeProgram || !lampProgram) return;
+    console.log('[library] both programs linked');
 
     // ---- Cube geometry: 24 vertices (4 per face), 36 indices ----
-    // 6 floats per vertex: x, y, z, nx, ny, nz
-    const cubeVertices = new Float32Array([
-      // +X face (normal +X)
-      0.5,-0.5,-0.5,  1,0,0,
-      0.5, 0.5,-0.5,  1,0,0,
-      0.5, 0.5, 0.5,  1,0,0,
-      0.5,-0.5, 0.5,  1,0,0,
-      // -X face
-     -0.5,-0.5, 0.5, -1,0,0,
-     -0.5, 0.5, 0.5, -1,0,0,
-     -0.5, 0.5,-0.5, -1,0,0,
-     -0.5,-0.5,-0.5, -1,0,0,
-      // +Y face
-     -0.5, 0.5,-0.5,  0,1,0,
-     -0.5, 0.5, 0.5,  0,1,0,
-      0.5, 0.5, 0.5,  0,1,0,
-      0.5, 0.5,-0.5,  0,1,0,
-      // -Y face
-     -0.5,-0.5, 0.5,  0,-1,0,
-     -0.5,-0.5,-0.5,  0,-1,0,
-      0.5,-0.5,-0.5,  0,-1,0,
-      0.5,-0.5, 0.5,  0,-1,0,
-      // +Z face
-     -0.5,-0.5, 0.5,  0,0,1,
-      0.5,-0.5, 0.5,  0,0,1,
-      0.5, 0.5, 0.5,  0,0,1,
-     -0.5, 0.5, 0.5,  0,0,1,
-      // -Z face
-      0.5,-0.5,-0.5,  0,0,-1,
-     -0.5,-0.5,-0.5,  0,0,-1,
-     -0.5, 0.5,-0.5,  0,0,-1,
-      0.5, 0.5,-0.5,  0,0,-1,
+    const cubeVerts = new Float32Array([
+      0.5,-0.5,-0.5,  1,0,0,   0.5, 0.5,-0.5,  1,0,0,   0.5, 0.5, 0.5,  1,0,0,   0.5,-0.5, 0.5,  1,0,0,
+     -0.5,-0.5, 0.5, -1,0,0,  -0.5, 0.5, 0.5, -1,0,0,  -0.5, 0.5,-0.5, -1,0,0,  -0.5,-0.5,-0.5, -1,0,0,
+     -0.5, 0.5,-0.5,  0,1,0,  -0.5, 0.5, 0.5,  0,1,0,   0.5, 0.5, 0.5,  0,1,0,   0.5, 0.5,-0.5,  0,1,0,
+     -0.5,-0.5, 0.5,  0,-1,0, -0.5,-0.5,-0.5,  0,-1,0,  0.5,-0.5,-0.5,  0,-1,0,  0.5,-0.5, 0.5,  0,-1,0,
+     -0.5,-0.5, 0.5,  0,0,1,   0.5,-0.5, 0.5,  0,0,1,   0.5, 0.5, 0.5,  0,0,1,  -0.5, 0.5, 0.5,  0,0,1,
+      0.5,-0.5,-0.5,  0,0,-1, -0.5,-0.5,-0.5,  0,0,-1, -0.5, 0.5,-0.5,  0,0,-1,  0.5, 0.5,-0.5,  0,0,-1,
     ]);
-    const cubeIndices = new Uint16Array([
-      0,1,2, 0,2,3,        // +X
-      4,5,6, 4,6,7,        // -X
-      8,9,10, 8,10,11,     // +Y
-      12,13,14, 12,14,15,  // -Y
-      16,17,18, 16,18,19,  // +Z
-      20,21,22, 20,22,23,  // -Z
+    const cubeIdx = new Uint16Array([
+      0,1,2, 0,2,3,
+      4,5,6, 4,6,7,
+      8,9,10, 8,10,11,
+      12,13,14, 12,14,15,
+      16,17,18, 16,18,19,
+      20,21,22, 20,22,23,
     ]);
-    console.log('[library] cube: 24 verts, 36 indices, 12 triangles');
 
-    // ---- VAO + buffers ----
-    const vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
+    // ---- Sphere geometry: UV sphere, 16 segments x 12 rings ----
+    function makeSphere(radius, segments, rings) {
+      const verts = [];
+      const idx = [];
+      for (let r = 0; r <= rings; r++) {
+        const v = r / rings;
+        const phi = v * Math.PI;
+        for (let s = 0; s <= segments; s++) {
+          const u = s / segments;
+          const theta = u * 2 * Math.PI;
+          const x = Math.sin(phi) * Math.cos(theta);
+          const y = Math.cos(phi);
+          const z = Math.sin(phi) * Math.sin(theta);
+          verts.push(x*radius, y*radius, z*radius,  x, y, z);
+        }
+      }
+      const stride = segments + 1;
+      for (let r = 0; r < rings; r++) {
+        for (let s = 0; s < segments; s++) {
+          const a = r*stride + s;
+          const b = a + stride;
+          idx.push(a, b, a+1,  b, b+1, a+1);
+        }
+      }
+      return { vertices: new Float32Array(verts), indices: new Uint16Array(idx) };
+    }
+    const sphere = makeSphere(0.10, 16, 12);  // 0.10m radius lamp
+    console.log('[library] sphere: verts=', sphere.vertices.length/6, 'tris=', sphere.indices.length/3);
 
-    const vbo = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-    gl.bufferData(gl.ARRAY_BUFFER, cubeVertices, gl.STATIC_DRAW);
+    // ---- Cube VAO ----
+    const cubeVao = gl.createVertexArray();
+    gl.bindVertexArray(cubeVao);
+    const cubeVbo = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVbo);
+    gl.bufferData(gl.ARRAY_BUFFER, cubeVerts, gl.STATIC_DRAW);
+    const cubeIbo = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIbo);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, cubeIdx, gl.STATIC_DRAW);
+    const cubeAPos = gl.getAttribLocation(cubeProgram, 'a_position');
+    const cubeANormal = gl.getAttribLocation(cubeProgram, 'a_normal');
+    gl.enableVertexAttribArray(cubeAPos);
+    gl.vertexAttribPointer(cubeAPos, 3, gl.FLOAT, false, 24, 0);
+    gl.enableVertexAttribArray(cubeANormal);
+    gl.vertexAttribPointer(cubeANormal, 3, gl.FLOAT, false, 24, 12);
 
-    const ibo = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, cubeIndices, gl.STATIC_DRAW);
-
-    const aPos = gl.getAttribLocation(program, 'a_position');
-    const aNormal = gl.getAttribLocation(program, 'a_normal');
-    console.log('[library] aPos=', aPos, 'aNormal=', aNormal);
-
-    // 6 floats per vertex, stride 24 bytes
-    gl.enableVertexAttribArray(aPos);
-    gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 24, 0);
-    gl.enableVertexAttribArray(aNormal);
-    gl.vertexAttribPointer(aNormal, 3, gl.FLOAT, false, 24, 12);
+    // ---- Lamp VAO ----
+    const lampVao = gl.createVertexArray();
+    gl.bindVertexArray(lampVao);
+    const lampVbo = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, lampVbo);
+    gl.bufferData(gl.ARRAY_BUFFER, sphere.vertices, gl.STATIC_DRAW);
+    const lampIbo = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, lampIbo);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, sphere.indices, gl.STATIC_DRAW);
+    const lampAPos = gl.getAttribLocation(lampProgram, 'a_position');
+    const lampANormal = gl.getAttribLocation(lampProgram, 'a_normal');
+    gl.enableVertexAttribArray(lampAPos);
+    gl.vertexAttribPointer(lampAPos, 3, gl.FLOAT, false, 24, 0);
+    gl.enableVertexAttribArray(lampANormal);
+    gl.vertexAttribPointer(lampANormal, 3, gl.FLOAT, false, 24, 12);
 
     // ---- Uniform locations ----
-    const uProjection = gl.getUniformLocation(program, 'u_projection');
-    const uView = gl.getUniformLocation(program, 'u_view');
-    const uModel = gl.getUniformLocation(program, 'u_model');
-    const uLightDir = gl.getUniformLocation(program, 'u_lightDir');
-    const uCameraPos = gl.getUniformLocation(program, 'u_cameraPos');
-    const uBaseColor = gl.getUniformLocation(program, 'u_baseColor');
-    console.log('[library] uniforms:',
-      'uProjection=', !!uProjection,
-      'uView=', !!uView,
-      'uModel=', !!uModel,
-      'uLightDir=', !!uLightDir,
-      'uCameraPos=', !!uCameraPos,
-      'uBaseColor=', !!uBaseColor);
+    const uCubeProjection = gl.getUniformLocation(cubeProgram, 'u_projection');
+    const uCubeView = gl.getUniformLocation(cubeProgram, 'u_view');
+    const uCubeModel = gl.getUniformLocation(cubeProgram, 'u_model');
+    const uCubeLampPos = gl.getUniformLocation(cubeProgram, 'u_lampPos');
+    const uCubeLampColor = gl.getUniformLocation(cubeProgram, 'u_lampColor');
+    const uCubeLampIntensity = gl.getUniformLocation(cubeProgram, 'u_lampIntensity');
+    const uCubeAmbient = gl.getUniformLocation(cubeProgram, 'u_ambient');
+    const uCubeBaseColor = gl.getUniformLocation(cubeProgram, 'u_baseColor');
 
-    // ---- Matrix math (just enough) ----
-    function mat4Identity() {
-      return new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
-    }
+    const uLampProjection = gl.getUniformLocation(lampProgram, 'u_projection');
+    const uLampView = gl.getUniformLocation(lampProgram, 'u_view');
+    const uLampModel = gl.getUniformLocation(lampProgram, 'u_model');
+    const uLampLampColor = gl.getUniformLocation(lampProgram, 'u_lampColor');
+    const uLampLampIntensity = gl.getUniformLocation(lampProgram, 'u_lampIntensity');
+
+    console.log('[library] cube uniforms OK:', !!uCubeProjection, !!uCubeView, !!uCubeModel, !!uCubeLampPos, !!uCubeLampColor, !!uCubeLampIntensity, !!uCubeAmbient, !!uCubeBaseColor);
+    console.log('[library] lamp uniforms OK:', !!uLampProjection, !!uLampView, !!uLampModel, !!uLampLampColor, !!uLampLampIntensity);
+
+    // ---- Matrix math ----
+    function mat4Identity() { return new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]); }
     function mat4Multiply(a, b) {
       const out = new Float32Array(16);
-      for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-          out[i*4+j] =
-            a[i*4+0]*b[0*4+j] +
-            a[i*4+1]*b[1*4+j] +
-            a[i*4+2]*b[2*4+j] +
-            a[i*4+3]*b[3*4+j];
-        }
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+        out[i*4+j] = a[i*4]*b[j] + a[i*4+1]*b[4+j] + a[i*4+2]*b[8+j] + a[i*4+3]*b[12+j];
       }
       return out;
     }
@@ -217,59 +244,75 @@
          1,
       ]);
     }
+    function mat4Translation(x, y, z) {
+      return new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, x,y,z,1]);
+    }
     function mat4RotationY(angle) {
       const c = Math.cos(angle), s = Math.sin(angle);
-      return new Float32Array([
-        c, 0,-s, 0,
-        0, 1, 0, 0,
-        s, 0, c, 0,
-        0, 0, 0, 1,
-      ]);
+      return new Float32Array([c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]);
     }
 
-    // ---- Resize handler ----
+    // ---- Resize ----
     function resize() {
       const w = window.innerWidth;
       const h = window.innerHeight;
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
-        console.log('[library] canvas resized to', w, 'x', h);
       }
     }
     window.addEventListener('resize', resize);
     resize();
 
-    // ---- Render loop ----
+    // ---- Camera & lighting ----
     const eye = [0, 1, 3];
     const target = [0, 0, 0];
     const up = [0, 1, 0];
     const projection = mat4Perspective((45 * Math.PI) / 180, canvas.width / canvas.height, 0.1, 100);
     const view = mat4LookAt(eye, target, up);
-    const lightDir = [0.5, 0.7, 0.5];  // direction TO the light
-    const baseColor = [0.85, 0.55, 0.25];  // warm orange
+    const LAMP_POS = [0, 2.5, 1.5];
+    const LAMP_COLOR = [0.957, 0.847, 0.537];  // #f4d889
+    const cubeColor = [0.6, 0.45, 0.30];  // warm brown
+    const cubeBase = mat4Translation(0, 0, 0);  // cube at origin
+    const lampBase = mat4Translation(LAMP_POS[0], LAMP_POS[1], LAMP_POS[2]);
 
-    console.log('[library] first frame: cube=24v, color=orange, light=above-right');
+    console.log('[library] scene: cube at origin, lamp at', LAMP_POS, 'camera at', eye);
 
     const start = performance.now();
     function loop() {
       const t = (performance.now() - start) / 1000;
-      const model = mat4RotationY(t * (2 * Math.PI / 10));  // 1 turn / 10s
+      // Cube rotates around Y, slowly
+      const cubeModel = mat4Multiply(mat4RotationY(t * (2 * Math.PI / 10)), cubeBase);
+      // Lamp doesn't rotate; static
+      const lampModel = lampBase;
 
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.enable(gl.DEPTH_TEST);
-      gl.clearColor(0.10, 0.10, 0.10, 1.0);  // dark gray background
+      gl.clearColor(0.055, 0.055, 0.055, 1.0);  // dark bg
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-      gl.uniformMatrix4fv(uProjection, false, projection);
-      gl.uniformMatrix4fv(uView, false, view);
-      gl.uniformMatrix4fv(uModel, false, model);
-      gl.uniform3fv(uLightDir, lightDir);
-      gl.uniform3fv(uCameraPos, eye);
-      gl.uniform3fv(uBaseColor, baseColor);
-
-      gl.bindVertexArray(vao);
+      // ---- Draw the cube (lit by the lamp) ----
+      gl.useProgram(cubeProgram);
+      gl.uniformMatrix4fv(uCubeProjection, false, projection);
+      gl.uniformMatrix4fv(uCubeView, false, view);
+      gl.uniformMatrix4fv(uCubeModel, false, cubeModel);
+      gl.uniform3fv(uCubeLampPos, LAMP_POS);
+      gl.uniform3fv(uCubeLampColor, LAMP_COLOR);
+      gl.uniform1f(uCubeLampIntensity, 1.0);
+      gl.uniform1f(uCubeAmbient, 0.05);
+      gl.uniform3fv(uCubeBaseColor, cubeColor);
+      gl.bindVertexArray(cubeVao);
       gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
+
+      // ---- Draw the lamp sphere (fully bright) ----
+      gl.useProgram(lampProgram);
+      gl.uniformMatrix4fv(uLampProjection, false, projection);
+      gl.uniformMatrix4fv(uLampView, false, view);
+      gl.uniformMatrix4fv(uLampModel, false, lampModel);
+      gl.uniform3fv(uLampLampColor, LAMP_COLOR);
+      gl.uniform1f(uLampLampIntensity, 1.0);
+      gl.bindVertexArray(lampVao);
+      gl.drawElements(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
       requestAnimationFrame(loop);
     }
