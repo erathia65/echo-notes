@@ -149,13 +149,15 @@ article header .post-date {
    any other library signal). Pointer-events none so the post text
    can be selected. */
 .library-3d {
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  width: 100vw;
-  height: 100vh;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: -1 !important;
+  background: #0e0e0e;
   pointer-events: none;
-  display: block;
+  display: block !important;
 }
 
 /* Post body becomes a translucent panel so the library atmosphere
@@ -163,12 +165,13 @@ article header .post-date {
    the v1 aesthetic is sharp. */
 body.post article {
   position: relative;
-  z-index: 1;  /* sit above the 3D canvas (z-index -2) and any library-bg (z-index -1) */
-  background: var(--panel);
-  padding: 2rem 2.5rem;
-  border: 1px solid var(--rule);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  z-index: 1;
+  background: transparent;
+  border: none;
+  padding: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  margin: 0;
 }
 
 body.post nav,
