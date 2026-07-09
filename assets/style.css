@@ -57,6 +57,20 @@ body {
   padding: 0 1.25rem;
 }
 
+body.post {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+body.post article {
+  position: absolute;
+  top: 50%;
+  right: 4vw;
+  transform: translateY(-50%);
+  max-width: 60ch;
+  z-index: 2;
+}
+
 a {
   color: var(--accent);
   text-decoration: none;
